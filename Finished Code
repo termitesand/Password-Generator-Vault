@@ -1,0 +1,154 @@
+import secrets         #secrets is a python module that generates URL-safe random strings and is                            the most secure source of randomness.
+import string          #string is a python module that contains functions for generating random                             strings.
+
+def create_username(vault, usernames):
+    while True:
+        account = input("Enter username (type 'cancel' to cancel): ")
+        if account.lower() == 'cancel':
+            print("Operation canceled.")
+            return None
+        elif account not in vault:
+            vault[account] = []
+            usernames.append(account)
+            return account
+        else:
+            print("Username already exists. Please choose a different username.")
+#if chosen, the user will be prompted to enter a username. If the username already exists in the vault, the user will be prompted to choose a different username. The username would be added to the vault if the username is not already in the vault.
+
+
+
+def generate_password(length):
+    additional_chars = '-_' + '!#$%&()*+-./:;<=>?@^_{|}~.'
+    alphabet = string.ascii_letters + string.digits + additional_chars 
+    password = ''.join(secrets.choice(alphabet) for i in range(length))
+    return password
+#if chosen, the user will be prompted choose the length of the randomly generated password. The password will be generated using the secrets module and the alphabet variable.
+
+
+
+def store_password(vault, usernames):
+    account = input("Enter username (type 'cancel' to cancel): ")
+    if account.lower() == 'cancel':
+        print("Operation canceled.")
+        return
+    elif account in vault:
+        print("Choose a password to store:")
+        print("1. Generate new password")
+        print("2. Upload password")
+        choice = input("Enter your choice (type 'cancel' to cancel): ")
+        if choice.lower() == 'cancel':
+            print("Operation canceled.")
+            return
+        elif choice == '1':
+            length = int(input("Length of the password: "))
+            password = generate_password(length)
+        elif choice == '2':
+            password = input("Enter password to upload: ")
+        else:
+            print("Invalid choice.")
+            return
+        vault[account].append(password)
+        print("Password stored successfully!")
+    else:
+        print("Account not found. Cannot store password.")
+#if chosen, the user will be prompted to enter a username. If the username exists in the vault, the user will be prompted to choose a password to store. Everything From "if choice" to the end of the paragraph is the working code, everything behind has more to do with the interface.
+
+
+
+
+def retrieve_password(vault, usernames):
+    account = input("Enter username (type 'cancel' to cancel): ")
+    if account.lower() == 'cancel':
+        print("Operation canceled.")
+        return
+    elif account in vault:
+        for i, password in enumerate(vault[account], start=1):
+            print(f"{i}. Password: {password}")
+    else:
+        print("No password found for", account)
+#if chosen, the user will be prompted to enter a username. If the username exists in the vault, the user will be prompted to choose a password to receive otherwise they are sent back to the main menu.
+
+
+
+
+def update_password(vault, usernames):
+    account = input("Enter username (type 'cancel' to cancel): ")
+    if account.lower() == 'cancel':
+        print("Operation canceled.")
+        return
+    elif account in vault:
+        print("Choose a password to update:")
+        for i, password in enumerate(vault[account], start=1):
+            print(f"{i}. {password}")
+        choice = int(input("Enter the number corresponding to the password to update (type 'cancel' to cancel): "))
+        if choice == 'cancel':
+            print("Operation canceled.")
+            return
+        if 1 <= choice <= len(vault[account]):
+            action = input("Do you want to update (U) or delete (D) the password? ").upper()
+            if action == 'U':
+                new_password = input("Enter new password: ")
+                vault[account][choice - 1] = new_password
+                print("Password updated successfully!")
+            elif action == 'D':
+                del vault[account][choice - 1]
+                print("Password deleted successfully!")
+            else:
+                print("Invalid action. Please try again.")
+        else:
+            print("Invalid choice.")
+    else:
+        print("Account not found. Cannot update password.")
+#If chosen, the user will once again be prompted to enter a username. If the username exists, the user will be asked to choose which password to update with each password have having a number assigned to it. Then the user will be asked whether they prefer to have the password be updated or deleted, if they choose to update the password the user will be prompted to enter a new password. If they choose to delete the password, the password would be deleted.
+
+
+
+
+
+
+def main():
+    print("Welcome to Password Vault and Generator!")
+    password_vault = {}
+    usernames = []
+
+    while True:
+        print("\nSelect an option:")
+        print("1. Create Username")
+        print("2. Store Password")
+        print("3. Retrieve Password")
+        print("4. Update Password")
+        print("5. Generate Password")
+        print("6. Exit")
+
+        choice = input("Enter your choice (type 'cancel' to cancel): ")
+
+        if choice == '1':
+          create_username(password_vault, usernames)
+
+        elif choice == '2':
+            store_password(password_vault, usernames)
+        elif choice == '3':
+            retrieve_password(password_vault, usernames)
+        elif choice == '4':
+            update_password(password_vault, usernames)
+        elif choice == '5':
+            length = input("Length of the password (type 'cancel' to cancel): ")
+            if length.lower() == 'cancel':
+                print("Operation canceled.")
+                continue
+            length = int(length)
+            print("Generated password:", generate_password(length))
+        elif choice == '6':
+            print("Exiting...")
+            break
+        elif choice.lower() == 'cancel':
+            print("Operation canceled.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+#Central piece of code, initializes an empty dictionary "password_vault" to store passwords associated with usernames and an empty list "usernames" to store existing usernames. It is a while loop that displays a menu of options 
+
+
+
+if __name__ == "__main__":
+    main()
